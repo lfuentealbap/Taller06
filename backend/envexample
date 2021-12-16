@@ -1,0 +1,4 @@
+SECRET_TOKEN="suclave"
+CLUSTER="cluster0-wxfwq.mongodb.net/UBB202001"
+USERBD="danielbustos86"
+PASSBD="daniel123"
