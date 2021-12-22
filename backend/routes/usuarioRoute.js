@@ -16,6 +16,7 @@ api.post('/usuario', userController.guardar);
 api.get('/usuario', auth.isAuth,userController.todos);
 api.post('/usuario/validar', userController.validar);
 api.post('/usuario/vigencia',auth.isAuth,userController.validaVigenciaUsuario);
+api.put('/usuario/modificar', userController.editar);
 
 // api.post('/autoguardar',autoController.guardar);
 

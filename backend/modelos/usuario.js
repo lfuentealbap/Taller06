@@ -4,9 +4,9 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const UsuarioSchema = Schema(
     {
-      nombre:String,
+      nombre: String,
       mail: String,
-      pass:String,
+      pass: String,
       activo: Boolean
      
       
@@ -19,9 +19,7 @@ const UsuarioSchema = Schema(
       if(!usuario.isModified('pass')){
         return next();
       }
-
   
-
     bcrypt.genSalt(10,(err,salt)=> {
       if(err){
         next(err);
@@ -36,7 +34,25 @@ const UsuarioSchema = Schema(
       })
     })
   })
+  /*UsuarioSchema.pre('findByIdAndUpdate',function(next){
+    const usuario = this;
+    if(!usuario.isModified('pass')){
+      return next();
+    }
+    bcrypt.genSalt(10,(err,salt)=> {
+      if(err){
+        next(err);
+      }
+      bcrypt.hash(usuario.pass,salt,null,(err,hash)=>{
+        if(err){
+          next(err);
+        }
+        usuario.pass = hash;
+        next();
 
+      })
+    })
+  })*/
 
   
 

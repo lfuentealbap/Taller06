@@ -73,24 +73,23 @@ const validaVigenciaUsuario = (req,res) =>{
     });
  
 }
-//modifica un usuario por id, falta agregarle esas volas de validacion y encriptacion
+//modifica un usuario por id, no se considera contraseña por estar encriptado
 function editar(req, res){
 
-    let idUsuario = req.params.id
-    nombre = req.body.nombre
-    mail = req.body.mail
-    pass = req.body.pass
-    activo = req.body.activo
+    let idUsuario = req.body.id
+    let nombre = req.body.nombre
+    let mail = req.body.mail
+    let activo = req.body.activo
 
     console.log(req.body)
 
-    Libro.findByIdAndUpdate(idUsuario, {nombre: nombre, mail:mail, pass: pass, activo: activo}, (err, usuario)=> {
+    Usuario.findByIdAndUpdate(idUsuario, {nombre: nombre, mail:mail, activo: activo}, (err, usuario)=> {
         if(err) res.status(500).send('Internal Error');
 
         if(!usuario) res.status(404).send('Not Found');
 
         res.status(200).send({
-            message: 'Editado Correctamente',
+            message: 'Usuario editado Correctamente',
             data: usuario
         });
     })
