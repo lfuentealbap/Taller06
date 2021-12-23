@@ -53,40 +53,40 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.background.paper,
     },
 }));
-function validarActivo(){
+/*function validarActivo(){
     
     let token = localStorage.getItem('TOKEN_APP_TALLER');
-    let TokenArray = token.split(" ");
+    //const [userToken,setUserToken] = useState([])
             
-    let correo = jwt.decode(TokenArray[1],process.env.SECRET_TOKEN); 
-    console.log('Token correo: '+ correo );
-    const Usuarios= ()=>{
+  
+    console.log('Token correo: '+ token );
+     const Usuarios= ()=>{
         //Hook que almacena los usuarios
         const [data,setData] = useState([])
       
         useEffect(() => {
-          RecuperaCliente()
-      }, []);
+            RecuperaCliente()
+        }, []);
         const RecuperaCliente = data => {
       
-        //Para obtener la lista de usuarios
-        axios
-        .get("/api/usuario")
-        .then(
-        (response) => {
-            console.log(response.data);
-            setData(response.data.usuario)
-            
-            data.forEach(usuario => {
-                if(usuario['mail']==correo){
-                    if(usuario['activo']==false){
-                        //redireccionar a login, mandar mensaje de usuario no esta activo
+            //Para obtener la lista de usuarios
+            axios
+            .get("/api/usuario")
+            .then(
+                (response) => {
+                    console.log(response.data);
+                    setData(response.data.usuario)
+                    
+                    data.forEach(usuario => {
+                        if(usuario['mail']==correo){
+                            if(usuario['activo']==false){
+                                //redireccionar a login, mandar mensaje de usuario no esta activo
 
-                    }
+                            }
+                        }
+                    });
                 }
-            });
-        }
-        )
+            )
         .catch((err) => {
             
             
@@ -107,24 +107,101 @@ function validarActivo(){
     
     }}
     
-}
+}*/
 
 export default function Menu() {
     const classes = useStyles();
     const [value, setValue] = React.useState(0);
+    //const [users, setUsers] = React.useState([]); //OPCION 1, No en uso
 
     useEffect(() => {
         const token = localStorage.getItem('TOKEN_APP_TALLER');
         if (token == null) {
             window.location = '/';
         }
+        let usuarioToken;
+        
+        //**Funcion que valida que el usuario que está en el token tenga el campo "activo" en true**
+        
+        function esActivo(){
+            //Usando la api de validar vigencia, podemos descodificar el token
+        axios.post('http://localhost:5000/api/usuario/vigencia', {
+            Authorization: token //Si vemos en el postman en la parte de headers(estan ocultos), hay un atributo que  
+            //se llama Authorization y ahí se ve que está puesto el token que se solicitó en la pestaña Authorization
+            })
+            .then(function (response){
+                if(response.status == 200){
+                    //Si vemos en la parte de abajo del postman, hay una parte que dice body y ahi aparece un
+                    //atributo llama do usuario, se rescata con response.data
+                    usuarioToken = response.data.usuario;
+                    //alert("usuario encontrado: "+usuarioToken);
+    
+                    //Para obtener la lista de usuarios
+                    axios.get("http://localhost:5000/api/usuario", {
+                        Authorization: token})
+                    .then(
+                        (response1) => {
+                            //alert("Estoy buscando mi actividad"); //Pa probar si esta funcionando esta parte
+                            //Extrae los resultados del axios al hook de users (OPCION 1)
+                            //setUsers(response1.data.usuario) //NO en uso
+                            //Asigna los resultados del axios a una variable. (funca mejor que el hook) (OPCION 2)
+                            let users= response1.data.usuario;
+                            console.log(response1.data.usuario);
+                            //Recorre el contenido de users
+                            users.forEach(usuario => {
+                                //console.log("Lista de usuarios: "+usuario.nombre);
+                                //Busca si existe el usuario del token en la bd
+                                if(usuario.mail===usuarioToken){
+                                    //alert("Usuario Token: "+usuarioToken+"\nUsuario en recorrido: "+usuario.mail)
+                                    //verifica si el usuario no está activo en la bd (activo==false))
+                                    if(usuario.activo===false){
+                                        //redireccionar a login, mandar mensaje de usuario no esta activo
+                                        alert("Usuario no activo, serás redirigido!!")
+                                        //*Inserte codigo de redireccion a login**
+                                        //*Inserte código de borrado de localStorage**(Opcional)
+                                    }else{
+                                        console.log("Usuario activo OK")
+                                    }
+                                }
+                            });//Fin forEach
+
+                        }
+                    )
+                    .catch((err) => {
+                        
+                        
+                        if (err.response1) {
+                            if(err.response1.status==401){
+                                let motivo= err.response1.data.mensaje;
+                                alert(`No autorizado:${motivo}`)
+                            }
+                            console.log(err.response1.data.mensaje)
+                        } else if (err.request) {
+                            // client never received a response, or request never left
+                        } else {
+                            // anything else
+                        }
+                
+                    });
+    
+                }
+                else {
+                    alert("Error al encontrar usuario en el token")
+                }
+    
+            })
+            .catch(function (error){
+                console.log(error);
+            });
+        }
+        esActivo();
+        
     }, []);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
     
-    validarActivo();
 
     return (
         
