@@ -158,6 +158,7 @@ export default function Menu() {
                                         //redireccionar a login, mandar mensaje de usuario no esta activo
                                         alert("Usuario no activo, serás redirigido!!")
                                         //*Inserte codigo de redireccion a login**
+                                        window.location.href = "http://localhost:3000/login"
                                         //*Inserte código de borrado de localStorage**(Opcional)
                                     }else{
                                         console.log("Usuario activo OK")
